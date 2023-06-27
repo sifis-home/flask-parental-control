@@ -1,0 +1,8 @@
+version: '1'
+
+services:
+  app:
+    image: flask-parental-control
+    ports:
+      - 6060:6060
+    network_mode: "host"

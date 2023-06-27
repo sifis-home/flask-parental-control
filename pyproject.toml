@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "privacy_aware_parental_control"
+version = "0.1.0"
+description = ""
+authors = ["WisamAbbasi <39978331+WisamAbbasi@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.11"
+cmake = "^3.22.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+opencv-python = "3.4.11.45"
+tensorflow = "2.4.0"
+numpy = "1.19.2"
+flask = "2.2.2"
+matplotlib = "3.3.4"
+omegaconf = "2.2.2"
+cmake = "3.22.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
