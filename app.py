@@ -100,6 +100,170 @@ def yield_images_from_path(image_path):
         r = 640 / max(w, h)
         yield cv2.resize(img, (int(w * r), int(h * r)))
 
+
+@app.route('/cam_object/<cam_link>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>')
+def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_type,request_id):
+
+    analyzer_id = platform.node()
+    print("analyzer_id: ", analyzer_id)
+
+    # Get current date and time
+    now = datetime.datetime.now()
+
+    # Generate a random hash using SHA-256 algorithm
+    hash_object = hashlib.sha256()
+    hash_object.update(bytes(str(now), 'utf-8'))
+    hash_value = hash_object.hexdigest()
+
+    # Concatenate the time and the hash
+    analysis_id = str(analyzer_id) + str(now) + hash_value
+
+    # for age recognition
+    cap = cv2.VideoCapture(cam_link)
+
+    frame_id = 0
+
+    weight_file = get_file(
+            "EfficientNetB3_224_weights.11-3.44.hdf5",
+            pretrained_model,
+            cache_subdir="pretrained_models",
+            file_hash=modhash,
+            cache_dir=str(Path(__file__).resolve().parent),
+        )
+
+    # for face detection
+    detector = dlib.get_frontal_face_detector()
+
+    # load model and weights
+    model_name, img_size = Path(weight_file).stem.split("_")[:2]
+
+    img_size = int(img_size)
+    cfg = OmegaConf.from_dotlist(
+        [f"model.model_name={model_name}", f"model.img_size={img_size}"]
+    )
+
+    model = get_model(cfg)
+    model.load_weights(weight_file)
+    predicted_ages3 = []
+
+    while True:
+        # Read a frame from the video
+        ret, img = cap.read()
+        if not ret:
+            break
+        
+        img = np.asarray(img)
+        
+        frame_id+=1
+        print("frame_id: ", frame_id)
+
+        input_img = cv2.cvtColor(
+            cv2.GaussianBlur(img, (Privacy_Parameter, Privacy_Parameter), 0),
+            cv2.COLOR_BGR2RGB,
+        )
+        private_img = cv2.cvtColor(
+            cv2.GaussianBlur(img, (Privacy_Parameter, Privacy_Parameter), 0),
+            cv2.COLOR_BGR2RGB,
+        )
+        # print(private_img.shape)
+        img_h, img_w, _ = np.shape(input_img)
+
+        # detect faces using dlib detector
+        detected = detector(input_img, 1)
+        faces = np.empty((len(detected), img_size, img_size, 3))
+
+        if len(detected) > 0:
+            for i, d in enumerate(detected):
+                x1, y1, x2, y2, w, h = (
+                    d.left(),
+                    d.top(),
+                    d.right() + 1,
+                    d.bottom() + 1,
+                    d.width(),
+                    d.height(),
+                )
+                xw1 = max(int(x1 - margin * w), 0)
+                yw1 = max(int(y1 - margin * h), 0)
+                xw2 = min(int(x2 + margin * w), img_w - 1)
+                yw2 = min(int(y2 + margin * h), img_h - 1)
+                cv2.rectangle(private_img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                # cv2.rectangle(img, (xw1, yw1), (xw2, yw2), (255, 0, 0), 2)
+                faces[i] = cv2.resize(
+                    private_img[yw1 : yw2 + 1, xw1 : xw2 + 1], (img_size, img_size)
+                )
+
+            # predict ages and genders of the detected faces
+            results = model.predict(faces)
+            predicted_genders = results[0]
+            ages = np.arange(0, 101).reshape(101, 1)
+            predicted_ages = results[1].dot(ages).flatten()
+            predicted_ages2 = []
+
+            for apparent_age in predicted_ages:
+                if int(apparent_age) < 3:
+                    age_text = "Toddler"
+                elif int(apparent_age) >= 3 and int(apparent_age) <= 12:
+                    age_text = "Child"
+                elif int(apparent_age) >= 13 and int(apparent_age) <= 19:
+                    age_text = "Teen"
+                elif int(apparent_age) >= 20 and int(apparent_age) <= 60:
+                    age_text = "Adult"
+                elif int(apparent_age) > 60:
+                    age_text = "Senior"
+                predicted_ages2.append(age_text)
+
+            print(predicted_ages2)
+        predicted_ages3.append(predicted_ages2)
+        print(len(predicted_ages3))
+
+        ws_req = {
+                        "RequestPostTopicUUID": {
+                        "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Frame_Results",
+                        "topic_uuid": "Parental_Control_Frame_Results",
+                        "value": {
+                            "description": "Parental Control Frame Results",
+                            "requestor_id": str(requestor_id),
+                            "requestor_type": str(requestor_type),
+                            "request_id": str(request_id),
+                            "analyzer_id": str(analyzer_id),
+                            "analysis_id": str(analysis_id),
+                            "Type": "CAM",
+                            "file_name": "Empty",
+                            "Privacy_Parameter": int(Privacy_Parameter),
+                            "Frame": int(frame_id),
+                            "Ages": predicted_ages3,
+                            "length": int(len(predicted_ages3))
+                        }
+                    }
+                }
+        ws.send(json.dumps(ws_req))
+
+
+    ws_req_final = {
+                    "RequestPostTopicUUID": {
+                    "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Results",
+                    "topic_uuid": "Parental_Control_Results",
+                    "value": {
+                        "description": "Parental Control Results",
+                        "requestor_id": str(requestor_id),
+                        "requestor_type": str(requestor_type),
+                        "request_id": str(request_id),
+                        "analyzer_id": str(analyzer_id),
+                        "analysis_id": str(analysis_id),
+                        "Type": "CAM",
+                        "file_name": "Empty",
+                        "Privacy_Parameter": int(Privacy_Parameter),
+                        "Frames Count": int(frame_id),
+                        "Ages": predicted_ages3,
+                        "length": int(len(predicted_ages3))
+                    }
+                }
+            }
+    ws.send(json.dumps(ws_req_final))
+
+    return ws_req_final
+
+
 @app.route('/file_estimation/<file_name>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>', methods=['POST'])
 def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
     analyzer_id = platform.node()
@@ -131,7 +295,6 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
         handle.save(temp)
 
         video_link = temp.name
-        # print("video_link: ", video_link)
 
         cap = cv2.VideoCapture(video_link)
         frame_id = 0
@@ -143,14 +306,12 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
             file_hash=modhash,
             cache_dir=str(Path(__file__).resolve().parent),
         )
-        # print("weight_file: ", weight_file)
+
         # for face detection
         detector = dlib.get_frontal_face_detector()
 
         # load model and weights
         model_name, img_size = Path(weight_file).stem.split("_")[:2]
-        # print("model_name: ", model_name)
-        # print("img_size: ", img_size)
 
         img_size = int(img_size)
         cfg = OmegaConf.from_dotlist(
@@ -242,12 +403,12 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
                                 "request_id": str(request_id),
                                 "analyzer_id": str(analyzer_id),
                                 "analysis_id": str(analysis_id),
-                                "Type": "Video_file",
+                                "Type": "File",
                                 "file_name": str(file_name),
                                 "Privacy_Parameter": int(Privacy_Parameter),
                                 "Frame": int(frame_id),
-                                "Ages": predicted_ages3,
-                                "length": int(len(predicted_ages3))
+                                "Ages": predicted_ages2,
+                                "length": int(len(predicted_ages2))
                             }
                         }
                     }
@@ -265,7 +426,7 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
                             "request_id": str(request_id),
                             "analyzer_id": str(analyzer_id),
                             "analysis_id": str(analysis_id),
-                            "Type": "Video_file",
+                            "Type": "File",
                             "file_name": str(file_name),
                             "Privacy_Parameter": int(Privacy_Parameter),
                             "Frames Count": int(frame_id),
@@ -276,8 +437,6 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
                 }
         ws.send(json.dumps(ws_req_final))
 
-    ## This will be automatically converted to JSON.
-    # return {'filename': filename, 'Age': predicted_ages2, 'Privacy_Degree': Privacy_Parameter}
     return ws_req_final
 
 if __name__ == "__main__":
