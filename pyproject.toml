@@ -1,23 +1,60 @@
 [tool.poetry]
-name = "privacy_aware_parental_control"
-version = "0.1.0"
-description = ""
-authors = ["WisamAbbasi <39978331+WisamAbbasi@users.noreply.github.com>"]
+name = "flask-parental-control"
+version = "0.0"
+description = "Privacy-Aware Parental Control"
+authors = ["WisamAbbasi <wesam.alabbasi@iit.cnr.it>"]
+repository = "https://github.com/sifis-home/flask-parental-control"
+license = "MIT"
+classifiers = [
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3 :: Only",
+]
+include = ["README.md", "LICENSE.md", "flask-parental-control/data/*"]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.10,<3.12"
+opencv-python = "^3.4.11.45"
 cmake = "^3.22.5"
-
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
-opencv-python = "3.4.11.45"
 tensorflow = "2.4.0"
-numpy = "1.19.2"
+numpy = "1.24"
+opencv-python-headless = "^3.4.11.45"
 flask = "2.2.2"
 matplotlib = "3.3.4"
 omegaconf = "2.2.2"
-cmake = "3.22.5"
+websocket-client = "1.6.1"
+rel = "0.4.9"
+requests = "2.28.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2.1"
+pre-commit = "^3.0.4"
+black = "^23.1.0"
+isort = "^5.12.0"
+ruff = "^0.0.63"
+coverage = {extras = ["toml"], version = "^7.1.0"}
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "pip>=22.1.2"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.ruff]
+line-length = 79
+select = [
+    "F401",
+    "F403",
+]
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*"]
+
+[tool.coverage.report]
+fail_under = 60

@@ -1,15 +1,11 @@
-FROM python:3.7
+FROM python:3.10
 RUN python -m pip install --upgrade pip
-RUN pip install opencv-python-headless==4.5.3.56
 RUN apt-get update && apt-get install -y python3-opencv
-RUN pip install opencv-python
 RUN pip install poetry
 RUN pip install ecc
-RUN pip install websocket-client
-RUN pip install rel
 
 RUN git clone https://github.com/davisking/dlib
-RUN pip install cmake
+# RUN pip install cmake
 WORKDIR /dlib
 RUN python setup.py install
 
@@ -25,7 +21,6 @@ COPY factory.py /dlib
 COPY generator.py /dlib
 COPY utils.py /dlib
 COPY config.yaml /dlib
-COPY test.py /dlib
 
 RUN poetry config virtualenvs.create false
 RUN poetry install

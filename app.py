@@ -1,26 +1,21 @@
-from flask import Flask,request, abort, request
-from flask import json
-from tempfile import NamedTemporaryFile
-
-from contextlib import contextmanager
-from pathlib import Path
-import cv2
-import dlib
-import matplotlib.pyplot as plt
-import numpy as np
-from omegaconf import OmegaConf
-from tensorflow.keras.utils import get_file
-from factory import get_model
-import tensorflow as tf
-import re
-import platform
 import datetime
 import hashlib
-
-import websocket
 import json
-import _thread
+import platform
+from contextlib import contextmanager
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+import cv2
+import dlib
+import numpy as np
 import rel
+import websocket
+from flask import Flask, abort, json, request
+from omegaconf import OmegaConf
+from tensorflow.keras.utils import get_file
+
+from factory import get_model
 
 app = Flask(__name__)
 
@@ -28,6 +23,7 @@ pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/downl
 modhash = "6d7f7b7ced093a8b3ef6399163da6ece"
 
 margin = 0.4
+
 
 def on_error(ws, error):
     print(error)
@@ -40,12 +36,20 @@ def on_close(ws, close_status_code, close_msg):
 def on_open(ws):
     print("### Connection established ###")
 
+
 def draw_label(
-    image, point, label, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=0.8, thickness=1
+    image,
+    point,
+    label,
+    font=cv2.FONT_HERSHEY_SIMPLEX,
+    font_scale=0.8,
+    thickness=1,
 ):
     size = cv2.getTextSize(label, font, font_scale, thickness)[0]
     x, y = point
-    cv2.rectangle(image, (x, y - size[1]), (x + size[0], y), (255, 0, 0), cv2.FILLED)
+    cv2.rectangle(
+        image, (x, y - size[1]), (x + size[0], y), (255, 0, 0), cv2.FILLED
+    )
     cv2.putText(
         image,
         label,
@@ -56,6 +60,8 @@ def draw_label(
         thickness,
         lineType=cv2.LINE_AA,
     )
+
+
 @contextmanager
 def video_capture(*args, **kwargs):
     cap = cv2.VideoCapture(*args, **kwargs)
@@ -80,6 +86,8 @@ def yield_images(video_link):
                 raise RuntimeError("Failed to capture image")
 
             yield img
+
+
 def yield_images_from_dir(image_dir):
     image_dir = Path(image_dir)
 
@@ -90,7 +98,8 @@ def yield_images_from_dir(image_dir):
             h, w, _ = img.shape
             r = 640 / max(w, h)
             yield cv2.resize(img, (int(w * r), int(h * r)))
-            
+
+
 def yield_images_from_path(image_path):
     print(image_path)
     img = cv2.imread(str(image_path), 1)
@@ -101,9 +110,12 @@ def yield_images_from_path(image_path):
         yield cv2.resize(img, (int(w * r), int(h * r)))
 
 
-@app.route('/cam_object/<cam_link>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>')
-def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_type,request_id):
-
+@app.route(
+    "/cam_object/<cam_link>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>"
+)
+def cam_object_recognition(
+    cam_link, Privacy_Parameter, requestor_id, requestor_type, request_id
+):
     analyzer_id = platform.node()
     print("analyzer_id: ", analyzer_id)
 
@@ -112,7 +124,7 @@ def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_ty
 
     # Generate a random hash using SHA-256 algorithm
     hash_object = hashlib.sha256()
-    hash_object.update(bytes(str(now), 'utf-8'))
+    hash_object.update(bytes(str(now), "utf-8"))
     hash_value = hash_object.hexdigest()
 
     # Concatenate the time and the hash
@@ -124,12 +136,12 @@ def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_ty
     frame_id = 0
 
     weight_file = get_file(
-            "EfficientNetB3_224_weights.11-3.44.hdf5",
-            pretrained_model,
-            cache_subdir="pretrained_models",
-            file_hash=modhash,
-            cache_dir=str(Path(__file__).resolve().parent),
-        )
+        "EfficientNetB3_224_weights.11-3.44.hdf5",
+        pretrained_model,
+        cache_subdir="pretrained_models",
+        file_hash=modhash,
+        cache_dir=str(Path(__file__).resolve().parent),
+    )
 
     # for face detection
     detector = dlib.get_frontal_face_detector()
@@ -151,10 +163,10 @@ def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_ty
         ret, img = cap.read()
         if not ret:
             break
-        
+
         img = np.asarray(img)
-        
-        frame_id+=1
+
+        frame_id += 1
         print("frame_id: ", frame_id)
 
         input_img = cv2.cvtColor(
@@ -189,7 +201,8 @@ def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_ty
                 cv2.rectangle(private_img, (x1, y1), (x2, y2), (255, 0, 0), 2)
                 # cv2.rectangle(img, (xw1, yw1), (xw2, yw2), (255, 0, 0), 2)
                 faces[i] = cv2.resize(
-                    private_img[yw1 : yw2 + 1, xw1 : xw2 + 1], (img_size, img_size)
+                    private_img[yw1 : yw2 + 1, xw1 : xw2 + 1],
+                    (img_size, img_size),
                 )
 
             # predict ages and genders of the detected faces
@@ -217,55 +230,59 @@ def cam_object_recognition(cam_link, Privacy_Parameter,requestor_id,requestor_ty
         print(len(predicted_ages3))
 
         ws_req = {
-                        "RequestPostTopicUUID": {
-                        "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Frame_Results",
-                        "topic_uuid": "Parental_Control_Frame_Results",
-                        "value": {
-                            "description": "Parental Control Frame Results",
-                            "requestor_id": str(requestor_id),
-                            "requestor_type": str(requestor_type),
-                            "request_id": str(request_id),
-                            "analyzer_id": str(analyzer_id),
-                            "analysis_id": str(analysis_id),
-                            "Type": "CAM",
-                            "file_name": "Empty",
-                            "Privacy_Parameter": int(Privacy_Parameter),
-                            "Frame": int(frame_id),
-                            "Ages": predicted_ages3,
-                            "length": int(len(predicted_ages3))
-                        }
-                    }
-                }
+            "RequestPostTopicUUID": {
+                "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Frame_Results",
+                "topic_uuid": "Parental_Control_Frame_Results",
+                "value": {
+                    "description": "Parental Control Frame Results",
+                    "requestor_id": str(requestor_id),
+                    "requestor_type": str(requestor_type),
+                    "request_id": str(request_id),
+                    "analyzer_id": str(analyzer_id),
+                    "analysis_id": str(analysis_id),
+                    "Type": "CAM",
+                    "file_name": "Empty",
+                    "Privacy_Parameter": int(Privacy_Parameter),
+                    "Frame": int(frame_id),
+                    "Ages": predicted_ages3,
+                    "length": int(len(predicted_ages3)),
+                },
+            }
+        }
         ws.send(json.dumps(ws_req))
 
-
     ws_req_final = {
-                    "RequestPostTopicUUID": {
-                    "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Results",
-                    "topic_uuid": "Parental_Control_Results",
-                    "value": {
-                        "description": "Parental Control Results",
-                        "requestor_id": str(requestor_id),
-                        "requestor_type": str(requestor_type),
-                        "request_id": str(request_id),
-                        "analyzer_id": str(analyzer_id),
-                        "analysis_id": str(analysis_id),
-                        "Type": "CAM",
-                        "file_name": "Empty",
-                        "Privacy_Parameter": int(Privacy_Parameter),
-                        "Frames Count": int(frame_id),
-                        "Ages": predicted_ages3,
-                        "length": int(len(predicted_ages3))
-                    }
-                }
-            }
+        "RequestPostTopicUUID": {
+            "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Results",
+            "topic_uuid": "Parental_Control_Results",
+            "value": {
+                "description": "Parental Control Results",
+                "requestor_id": str(requestor_id),
+                "requestor_type": str(requestor_type),
+                "request_id": str(request_id),
+                "analyzer_id": str(analyzer_id),
+                "analysis_id": str(analysis_id),
+                "Type": "CAM",
+                "file_name": "Empty",
+                "Privacy_Parameter": int(Privacy_Parameter),
+                "Frames Count": int(frame_id),
+                "Ages": predicted_ages3,
+                "length": int(len(predicted_ages3)),
+            },
+        }
+    }
     ws.send(json.dumps(ws_req_final))
 
     return ws_req_final
 
 
-@app.route('/file_estimation/<file_name>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>', methods=['POST'])
-def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
+@app.route(
+    "/file_estimation/<file_name>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>",
+    methods=["POST"],
+)
+def handler(
+    file_name, Privacy_Parameter, requestor_id, requestor_type, request_id
+):
     analyzer_id = platform.node()
     print("analyzer_id: ", analyzer_id)
 
@@ -274,7 +291,7 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
 
     # Generate a random hash using SHA-256 algorithm
     hash_object = hashlib.sha256()
-    hash_object.update(bytes(str(now), 'utf-8'))
+    hash_object.update(bytes(str(now), "utf-8"))
     hash_value = hash_object.hexdigest()
 
     # Concatenate the time and the hash
@@ -298,7 +315,7 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
 
         cap = cv2.VideoCapture(video_link)
         frame_id = 0
-        
+
         weight_file = get_file(
             "EfficientNetB3_224_weights.11-3.44.hdf5",
             pretrained_model,
@@ -327,18 +344,22 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
             ret, img = cap.read()
             if not ret:
                 break
-            
+
             img = np.asarray(img)
-            
-            frame_id+=1
+
+            frame_id += 1
             print("frame_id: ", frame_id)
 
             input_img = cv2.cvtColor(
-                cv2.GaussianBlur(img, (Privacy_Parameter, Privacy_Parameter), 0),
+                cv2.GaussianBlur(
+                    img, (Privacy_Parameter, Privacy_Parameter), 0
+                ),
                 cv2.COLOR_BGR2RGB,
             )
             private_img = cv2.cvtColor(
-                cv2.GaussianBlur(img, (Privacy_Parameter, Privacy_Parameter), 0),
+                cv2.GaussianBlur(
+                    img, (Privacy_Parameter, Privacy_Parameter), 0
+                ),
                 cv2.COLOR_BGR2RGB,
             )
             # print(private_img.shape)
@@ -362,10 +383,13 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
                     yw1 = max(int(y1 - margin * h), 0)
                     xw2 = min(int(x2 + margin * w), img_w - 1)
                     yw2 = min(int(y2 + margin * h), img_h - 1)
-                    cv2.rectangle(private_img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                    cv2.rectangle(
+                        private_img, (x1, y1), (x2, y2), (255, 0, 0), 2
+                    )
                     # cv2.rectangle(img, (xw1, yw1), (xw2, yw2), (255, 0, 0), 2)
                     faces[i] = cv2.resize(
-                        private_img[yw1 : yw2 + 1, xw1 : xw2 + 1], (img_size, img_size)
+                        private_img[yw1 : yw2 + 1, xw1 : xw2 + 1],
+                        (img_size, img_size),
                     )
 
                 # predict ages and genders of the detected faces
@@ -393,58 +417,60 @@ def handler(file_name,Privacy_Parameter,requestor_id,requestor_type,request_id):
             print(len(predicted_ages3))
 
             ws_req = {
-                            "RequestPostTopicUUID": {
-                            "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Frame_Results",
-                            "topic_uuid": "Parental_Control_Frame_Results",
-                            "value": {
-                                "description": "Parental Control Frame Results",
-                                "requestor_id": str(requestor_id),
-                                "requestor_type": str(requestor_type),
-                                "request_id": str(request_id),
-                                "analyzer_id": str(analyzer_id),
-                                "analysis_id": str(analysis_id),
-                                "Type": "File",
-                                "file_name": str(file_name),
-                                "Privacy_Parameter": int(Privacy_Parameter),
-                                "Frame": int(frame_id),
-                                "Ages": predicted_ages2,
-                                "length": int(len(predicted_ages2))
-                            }
-                        }
-                    }
+                "RequestPostTopicUUID": {
+                    "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Frame_Results",
+                    "topic_uuid": "Parental_Control_Frame_Results",
+                    "value": {
+                        "description": "Parental Control Frame Results",
+                        "requestor_id": str(requestor_id),
+                        "requestor_type": str(requestor_type),
+                        "request_id": str(request_id),
+                        "analyzer_id": str(analyzer_id),
+                        "analysis_id": str(analysis_id),
+                        "Type": "File",
+                        "file_name": str(file_name),
+                        "Privacy_Parameter": int(Privacy_Parameter),
+                        "Frame": int(frame_id),
+                        "Ages": predicted_ages2,
+                        "length": int(len(predicted_ages2)),
+                    },
+                }
+            }
             ws.send(json.dumps(ws_req))
 
-
         ws_req_final = {
-                        "RequestPostTopicUUID": {
-                        "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Results",
-                        "topic_uuid": "Parental_Control_Results",
-                        "value": {
-                            "description": "Parental Control Results",
-                            "requestor_id": str(requestor_id),
-                            "requestor_type": str(requestor_type),
-                            "request_id": str(request_id),
-                            "analyzer_id": str(analyzer_id),
-                            "analysis_id": str(analysis_id),
-                            "Type": "File",
-                            "file_name": str(file_name),
-                            "Privacy_Parameter": int(Privacy_Parameter),
-                            "Frames Count": int(frame_id),
-                            "Ages": predicted_ages3,
-                            "length": int(len(predicted_ages3))
-                        }
-                    }
-                }
+            "RequestPostTopicUUID": {
+                "topic_name": "SIFIS:Privacy_Aware_Parental_Control_Results",
+                "topic_uuid": "Parental_Control_Results",
+                "value": {
+                    "description": "Parental Control Results",
+                    "requestor_id": str(requestor_id),
+                    "requestor_type": str(requestor_type),
+                    "request_id": str(request_id),
+                    "analyzer_id": str(analyzer_id),
+                    "analysis_id": str(analysis_id),
+                    "Type": "File",
+                    "file_name": str(file_name),
+                    "Privacy_Parameter": int(Privacy_Parameter),
+                    "Frames Count": int(frame_id),
+                    "Ages": predicted_ages3,
+                    "length": int(len(predicted_ages3)),
+                },
+            }
+        }
         ws.send(json.dumps(ws_req_final))
 
     return ws_req_final
 
+
 if __name__ == "__main__":
-    ws = websocket.WebSocketApp("ws://localhost:3000/ws",
-                                on_open=on_open,
-                                on_error=on_error,
-                                on_close=on_close)
+    ws = websocket.WebSocketApp(
+        "ws://localhost:3000/ws",
+        on_open=on_open,
+        on_error=on_error,
+        on_close=on_close,
+    )
 
     ws.run_forever(dispatcher=rel)  # Set dispatcher to automatic reconnection
     rel.signal(2, rel.abort)  # Keyboard Interrupt
-    app.run(host='0.0.0.0', port=6060)
+    app.run(host="0.0.0.0", port=6060)

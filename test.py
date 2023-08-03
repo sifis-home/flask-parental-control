@@ -1,1 +1,0 @@
-print("Parental Control")

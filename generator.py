@@ -15,7 +15,9 @@ transforms = A.Compose(
             value=0,
             p=1.0,
         ),
-        A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, p=0.5),
+        A.RandomBrightnessContrast(
+            brightness_limit=0.2, contrast_limit=0.2, p=0.5
+        ),
         A.HorizontalFlip(p=0.5),
     ]
 )
@@ -27,7 +29,10 @@ class ImageSequence(Sequence):
         self.indices = np.arange(len(df))
         self.batch_size = cfg.train.batch_size
         self.img_dir = (
-            Path(__file__).resolve().parents[1].joinpath("data", f"{cfg.data.db}_crop")
+            Path(__file__)
+            .resolve()
+            .parents[1]
+            .joinpath("data", f"{cfg.data.db}_crop")
         )
         self.img_size = cfg.model.img_size
         self.mode = mode

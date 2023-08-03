@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from scipy.io import loadmat
@@ -24,7 +23,15 @@ def get_meta(mat_path, db):
     second_face_score = meta[db][0, 0]["second_face_score"][0]
     age = [calc_age(photo_taken[i], dob[i]) for i in range(len(dob))]
 
-    return full_path, dob, gender, photo_taken, face_score, second_face_score, age
+    return (
+        full_path,
+        dob,
+        gender,
+        photo_taken,
+        face_score,
+        second_face_score,
+        age,
+    )
 
 
 def load_data(mat_path):
