@@ -37,29 +37,11 @@ def on_open(ws):
     print("### Connection established ###")
 
 
-def draw_label(
-    image,
-    point,
-    label,
-    font=cv2.FONT_HERSHEY_SIMPLEX,
-    font_scale=0.8,
-    thickness=1,
-):
-    size = cv2.getTextSize(label, font, font_scale, thickness)[0]
-    x, y = point
-    cv2.rectangle(
-        image, (x, y - size[1]), (x + size[0], y), (255, 0, 0), cv2.FILLED
-    )
-    cv2.putText(
-        image,
-        label,
-        point,
-        font,
-        font_scale,
-        (255, 255, 255),
-        thickness,
-        lineType=cv2.LINE_AA,
-    )
+def get_data():
+    analyzer_id = platform.node()
+    print(analyzer_id)
+
+    return analyzer_id
 
 
 @contextmanager
@@ -116,8 +98,7 @@ def yield_images_from_path(image_path):
 def cam_object_recognition(
     cam_link, Privacy_Parameter, requestor_id, requestor_type, request_id
 ):
-    analyzer_id = platform.node()
-    print("analyzer_id: ", analyzer_id)
+    analyzer_id = get_data()
 
     # Get current date and time
     now = datetime.datetime.now()
@@ -283,8 +264,7 @@ def cam_object_recognition(
 def handler(
     file_name, Privacy_Parameter, requestor_id, requestor_type, request_id
 ):
-    analyzer_id = platform.node()
-    print("analyzer_id: ", analyzer_id)
+    analyzer_id = get_data()
 
     # Get current date and time
     now = datetime.datetime.now()

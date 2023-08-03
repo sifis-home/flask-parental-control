@@ -9,8 +9,6 @@ RUN pip install cmake
 WORKDIR /dlib
 RUN python setup.py install
 
-#COPY . /app
-#WORKDIR /app
 COPY pyproject.toml /dlib
 copy app.py /dlib
 
@@ -25,7 +23,6 @@ COPY config.yaml /dlib
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
-# RUN pip install -r requirements.txt
 EXPOSE 6060
 ENTRYPOINT ["python"]
 CMD ["app.py"]
