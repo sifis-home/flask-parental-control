@@ -5,7 +5,7 @@ RUN pip install poetry
 RUN pip install ecc
 
 RUN git clone https://github.com/davisking/dlib
-# RUN pip install cmake
+RUN pip install cmake
 WORKDIR /dlib
 RUN python setup.py install
 
