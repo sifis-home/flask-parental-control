@@ -1,5 +1,7 @@
 import platform
+import unittest
 from unittest.mock import patch
+
 
 from app import get_data, on_close, on_error, on_open
 
@@ -35,3 +37,14 @@ def test_on_open():
         on_open(None)
 
     mock_print.assert_called_once_with("### Connection established ###")
+
+
+class TestVideoCapture(unittest.TestCase):
+    @patch("cv2.VideoCapture")
+    def test_video_capture_context_manager(self, mock_capture):
+        mock_instance = mock_capture.return_value
+        with video_capture("path/to/video.mp4") as cap:
+            self.assertEqual(cap, mock_instance)
+            mock_capture.assert_called_once_with("path/to/video.mp4")
+
+        mock_instance.release.assert_called_once()
