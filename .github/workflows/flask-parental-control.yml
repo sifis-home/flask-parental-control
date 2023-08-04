@@ -1,4 +1,4 @@
-name: flask-whisper-speech-recognition
+name: flask-parental-control
 
 on:
   push:
