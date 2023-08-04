@@ -2,8 +2,7 @@ import platform
 import unittest
 from unittest.mock import patch
 
-
-from app import get_data, on_close, on_error, on_open
+from app import get_data, on_close, on_error, on_open, video_capture
 
 
 def test_get_data():
