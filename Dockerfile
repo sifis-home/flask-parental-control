@@ -19,6 +19,7 @@ COPY factory.py /dlib
 COPY generator.py /dlib
 COPY utils.py /dlib
 COPY config.yaml /dlib
+COPY config-3.py /dlib
 
 RUN poetry config virtualenvs.create false
 RUN poetry install
