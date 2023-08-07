@@ -54,7 +54,6 @@ def video_capture(*args, **kwargs):
 
 
 def yield_images(video_link):
-    print(video_link)
     # capture video
     with video_capture(video_link) as cap:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -83,7 +82,7 @@ def yield_images_from_dir(image_dir):
 
 
 def yield_images_from_path(image_path):
-    print(image_path)
+    # print(image_path)
     img = cv2.imread(str(image_path), 1)
 
     if img is not None:

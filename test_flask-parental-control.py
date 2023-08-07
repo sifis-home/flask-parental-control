@@ -1,20 +1,72 @@
 import platform
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import cv2
 from omegaconf import OmegaConf
 from tensorflow.keras import applications
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import get_file
 
-from app import get_data, on_close, on_error, on_open, video_capture
+from app import (
+    get_data,
+    on_close,
+    on_error,
+    on_open,
+    video_capture,
+    yield_images,
+)
 from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
 modhash = "6d7f7b7ced093a8b3ef6399163da6ece"
+
+
+def test_yield_images():
+    # Mock cv2.VideoCapture
+    mocked_capture = Mock(spec=cv2.VideoCapture)
+    mocked_capture.set.return_value = True
+    mocked_capture.read.side_effect = [
+        ("mock_ret1", "mock_img1"),
+        ("mock_ret2", "mock_img2"),
+        (False, None),
+    ]
+
+    # Mock video_capture context manager
+    mocked_video_capture = Mock(return_value=mocked_capture)
+    with patch("your_module.video_capture", mocked_video_capture):
+        # Call the function with a mock video link
+        mock_video_link = "mock_video.mp4"
+
+        # Create a generator object by calling the function
+        generator = yield_images(mock_video_link)
+
+        # Retrieve frames from the generator
+        result1 = next(generator)
+        result2 = next(generator)
+
+        # Check if the VideoCapture context manager was called with the expected arguments
+        mocked_video_capture.assert_called_once_with(mock_video_link)
+
+        # Check if cv2.VideoCapture methods were called with the expected arguments
+        mocked_capture.set.assert_called_once_with(
+            cv2.CAP_PROP_FRAME_WIDTH, 640
+        )
+        mocked_capture.set.assert_called_once_with(
+            cv2.CAP_PROP_FRAME_HEIGHT, 480
+        )
+        mocked_capture.read.assert_has_calls([call(), call()])
+
+        # Check if the yielded frames match the expected frames
+        assert result1 == "mock_img1"
+        assert result2 == "mock_img2"
+
+        # Check if a RuntimeError is raised when no more frames are available
+        with pytest.raises(RuntimeError, match="Failed to capture image"):
+            next(generator)
 
 
 def test_get_model():
@@ -93,9 +145,7 @@ def test_get_optimizer():
 
     optimizer = get_optimizer(cfg)
 
-    if cfg.train.optimizer_name == "sgd":
-        expected_optimizer = SGD(lr=cfg.train.lr, momentum=0.9, nesterov=True)
-    elif cfg.train.optimizer_name == "adam":
+    if cfg.train.optimizer_name == "adam":
         expected_optimizer = Adam(lr=cfg.train.lr)
     else:
         raise ValueError("optimizer name should be 'sgd' or 'adam'")
