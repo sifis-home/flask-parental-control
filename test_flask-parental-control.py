@@ -151,6 +151,7 @@ def test_on_open():
 class TestVideoCapture(unittest.TestCase):
     @patch("cv2.VideoCapture")
     def test_video_capture_context_manager(self, mock_capture):
+        print("START")
         mock_instance = mock_capture.return_value
         with video_capture("path/to/video.mp4") as cap:
             self.assertEqual(cap, mock_instance)
