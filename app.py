@@ -2,7 +2,6 @@ import datetime
 import hashlib
 import json
 import platform
-from contextlib import contextmanager
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -44,51 +43,51 @@ def get_data():
     return analyzer_id
 
 
-@contextmanager
-def video_capture(*args, **kwargs):
-    cap = cv2.VideoCapture(*args, **kwargs)
-    try:
-        yield cap
-    finally:
-        cap.release()
+# @contextmanager
+# def video_capture(*args, **kwargs):
+#     cap = cv2.VideoCapture(*args, **kwargs)
+#     try:
+#         yield cap
+#     finally:
+#         cap.release()
 
 
-def yield_images(video_link):
-    # capture video
-    with video_capture(video_link) as cap:
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+# def yield_images(video_link):
+#     # capture video
+#     with video_capture(video_link) as cap:
+#         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+#         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-        while True:
-            # get video frame
-            ret, img = cap.read()
+#         while True:
+#             # get video frame
+#             ret, img = cap.read()
 
-            if not ret:
-                raise RuntimeError("Failed to capture image")
+#             if not ret:
+#                 raise RuntimeError("Failed to capture image")
 
-            yield img
-
-
-def yield_images_from_dir(image_dir):
-    image_dir = Path(image_dir)
-
-    for image_path in image_dir.glob("*.*"):
-        img = cv2.imread(str(image_path), 1)
-
-        if img is not None:
-            h, w, _ = img.shape
-            r = 640 / max(w, h)
-            yield cv2.resize(img, (int(w * r), int(h * r)))
+#             yield img
 
 
-def yield_images_from_path(image_path):
-    # print(image_path)
-    img = cv2.imread(str(image_path), 1)
+# def yield_images_from_dir(image_dir):
+#     image_dir = Path(image_dir)
 
-    if img is not None:
-        h, w, _ = img.shape
-        r = 640 / max(w, h)
-        yield cv2.resize(img, (int(w * r), int(h * r)))
+#     for image_path in image_dir.glob("*.*"):
+#         img = cv2.imread(str(image_path), 1)
+
+#         if img is not None:
+#             h, w, _ = img.shape
+#             r = 640 / max(w, h)
+#             yield cv2.resize(img, (int(w * r), int(h * r)))
+
+
+# def yield_images_from_path(image_path):
+#     # print(image_path)
+#     img = cv2.imread(str(image_path), 1)
+
+#     if img is not None:
+#         h, w, _ = img.shape
+#         r = 640 / max(w, h)
+#         yield cv2.resize(img, (int(w * r), int(h * r)))
 
 
 @app.route(
