@@ -37,9 +37,9 @@ def test_yield_images():
 
     # Mock video_capture context manager
     mocked_video_capture = Mock(return_value=mocked_capture)
-    with patch("your_module.video_capture", mocked_video_capture):
+    with patch("app.video_capture", mocked_video_capture):
         # Call the function with a mock video link
-        mock_video_link = "mock_video.mp4"
+        mock_video_link = "Adult1.mp4"
 
         # Create a generator object by calling the function
         generator = yield_images(mock_video_link)
