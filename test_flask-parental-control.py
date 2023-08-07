@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.utils import get_file
 
 from app import get_data, on_close, on_error, on_open, video_capture
-from factory import get_model, get_optimizer
+from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
 modhash = "6d7f7b7ced093a8b3ef6399163da6ece"
@@ -158,3 +158,31 @@ class TestVideoCapture(unittest.TestCase):
             mock_capture.assert_called_once_with("path/to/video.mp4")
 
         mock_instance.release.assert_called_once()
+
+
+def test_get_scheduler():
+    # Create a mock configuration (you can customize this according to your needs)
+    class MockConfig:
+        def __init__(self, epochs, lr):
+            self.train = MockTrainConfig(epochs, lr)
+
+    class MockTrainConfig:
+        def __init__(self, epochs, lr):
+            self.epochs = epochs
+            self.lr = lr
+
+    # Create a mock configuration with desired parameters
+    mock_cfg = MockConfig(epochs=100, lr=0.1)
+
+    # Get the scheduler from the function
+    scheduler = get_scheduler(mock_cfg)
+
+    # Test different epoch indices and expected learning rates
+    epoch_indices = [0, 25, 50, 75, 100]
+    expected_lr_values = [0.1, 0.02, 0.004, 0.0008, 0.0008]  # Adjust as needed
+
+    for epoch_idx, expected_lr in zip(epoch_indices, expected_lr_values):
+        calculated_lr = scheduler(epoch_idx)
+        assert (
+            calculated_lr == expected_lr
+        ), f"For epoch {epoch_idx}: expected {expected_lr}, got {calculated_lr}"
