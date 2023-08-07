@@ -7,6 +7,7 @@ from omegaconf import OmegaConf
 from tensorflow.keras import applications
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.utils import get_file
 
 from app import get_data, on_close, on_error, on_open, video_capture
