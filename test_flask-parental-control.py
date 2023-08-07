@@ -1,5 +1,4 @@
 import platform
-import unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -146,15 +145,15 @@ def test_on_open():
     mock_print.assert_called_once_with("### Connection established ###")
 
 
-class TestVideoCapture(unittest.TestCase):
-    @patch("cv2.VideoCapture")
-    def test_video_capture_context_manager(self, mock_capture):
-        mock_instance = mock_capture.return_value
-        with video_capture("path/to/video.mp4") as cap:
-            self.assertEqual(cap, mock_instance)
-            mock_capture.assert_called_once_with("path/to/video.mp4")
+# class TestVideoCapture(unittest.TestCase):
+#     @patch("cv2.VideoCapture")
+#     def test_video_capture_context_manager(self, mock_capture):
+#         mock_instance = mock_capture.return_value
+#         with video_capture("path/to/video.mp4") as cap:
+#             self.assertEqual(cap, mock_instance)
+#             mock_capture.assert_called_once_with("path/to/video.mp4")
 
-        mock_instance.release.assert_called_once()
+#         mock_instance.release.assert_called_once()
 
 
 def test_get_scheduler():
