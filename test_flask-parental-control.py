@@ -76,11 +76,17 @@ def test_get_optimizer():
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
     optimizer_name = "adam"
+    lr = 0.001
+    epochs = 30
+    batch_size = 32
     cfg = OmegaConf.from_dotlist(
         [
             f"model.model_name={model_name}",
             f"model.img_size={img_size}",
             f"train.optimizer_name={optimizer_name}",
+            f"train.lr={lr}",
+            f"train.epochs={epochs}",
+            f"train.batch_size={batch_size}",
         ]
     )
 
