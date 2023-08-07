@@ -10,7 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.utils import get_file
 
 from app import get_data, on_close, on_error, on_open, video_capture
-from factory import get_model
+from factory import get_model, get_optimizer
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
 modhash = "6d7f7b7ced093a8b3ef6399163da6ece"
@@ -61,6 +61,46 @@ def test_get_model():
         expected_model.summary()
         print("\nActual Loaded Model Summary:")
         model.summary()
+
+
+def test_get_optimizer():
+    weight_file = get_file(
+        "EfficientNetB3_224_weights.11-3.44.hdf5",
+        pretrained_model,
+        cache_subdir="pretrained_models",
+        file_hash=modhash,
+        cache_dir=str(Path(__file__).resolve().parent),
+    )
+
+    # load model and weights
+    model_name, img_size = Path(weight_file).stem.split("_")[:2]
+    img_size = int(img_size)
+    cfg = OmegaConf.from_dotlist(
+        [f"model.model_name={model_name}", f"model.img_size={img_size}"]
+    )
+
+    optimizer = get_optimizer(cfg)
+
+    if cfg.train.optimizer_name == "sgd":
+        expected_optimizer = SGD(lr=cfg.train.lr, momentum=0.9, nesterov=True)
+    elif cfg.train.optimizer_name == "adam":
+        expected_optimizer = Adam(lr=cfg.train.lr)
+    else:
+        raise ValueError("optimizer name should be 'sgd' or 'adam'")
+
+    # Compare the optimizers using their string representations
+    if str(optimizer) == str(expected_optimizer):
+        print(
+            "Test Passed: The loaded optimizer matches the expected optimizer."
+        )
+    else:
+        print(
+            "Test Failed: The loaded optimizer does not match the expected optimizer."
+        )
+        print("Expected Optimizer Summary:")
+        expected_optimizer.get_config()  # Display optimizer configuration
+        print("\nActual Loaded Optimizer Summary:")
+        optimizer.get_config()  # Display optimizer configuration
 
 
 def test_get_data():
