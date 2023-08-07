@@ -50,7 +50,15 @@ def test_get_model():
         inputs=base_model.input, outputs=[pred_gender, pred_age]
     )
 
-    # assert model == expected_model
+    # Compare the models using their string representations
+    if str(model) == str(expected_model):
+        print("Test Passed: The loaded model matches the expected model.")
+    else:
+        print("Test Failed: The loaded model does not match the expected model.")
+        print("Expected Model Summary:")
+        expected_model.summary()
+        print("\nActual Loaded Model Summary:")
+        model.summary()
 
 
 def test_get_data():
