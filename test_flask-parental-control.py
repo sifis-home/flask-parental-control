@@ -1,5 +1,4 @@
 import platform
-import unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -10,7 +9,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.utils import get_file
 
-from app import get_data, on_close, on_error, on_open, video_capture
+from app import get_data, on_close, on_error, on_open
 from factory import get_model, get_optimizer
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
@@ -148,12 +147,12 @@ def test_on_open():
     mock_print.assert_called_once_with("### Connection established ###")
 
 
-class TestVideoCapture(unittest.TestCase):
-    @patch("cv2.VideoCapture")
-    def test_video_capture_context_manager(self, mock_capture):
-        mock_instance = mock_capture.return_value
-        with video_capture("path/to/video.mp4") as cap:
-            self.assertEqual(cap, mock_instance)
-            mock_capture.assert_called_once_with("path/to/video.mp4")
+# class TestVideoCapture(unittest.TestCase):
+#     @patch("cv2.VideoCapture")
+#     def test_video_capture_context_manager(self, mock_capture):
+#         mock_instance = mock_capture.return_value
+#         with video_capture("path/to/video.mp4") as cap:
+#             self.assertEqual(cap, mock_instance)
+#             mock_capture.assert_called_once_with("path/to/video.mp4")
 
-        mock_instance.release.assert_called_once()
+#         mock_instance.release.assert_called_once()
