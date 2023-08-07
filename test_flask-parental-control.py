@@ -75,8 +75,13 @@ def test_get_optimizer():
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
+    optimizer_name = "adam"
     cfg = OmegaConf.from_dotlist(
-        [f"model.model_name={model_name}", f"model.img_size={img_size}"]
+        [
+            f"model.model_name={model_name}",
+            f"model.img_size={img_size}",
+            f"train.optimizer_name={optimizer_name}",
+        ]
     )
 
     optimizer = get_optimizer(cfg)
