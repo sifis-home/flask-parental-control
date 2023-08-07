@@ -60,7 +60,7 @@ def test_get_model():
         )
         print("Expected Model Summary:")
         expected_model.summary()
-        print("\nActual Model Summary:")
+        print("\nActual Loaded Model Summary:")
         model.summary()
 
 
