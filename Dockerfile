@@ -20,7 +20,7 @@ COPY generator.py /dlib
 COPY utils.py /dlib
 COPY config.yaml /dlib
 COPY config-3.py /dlib
-COPY Adult1.mp4 /dlib
+COPY face.jpg /dlib
 
 RUN poetry config virtualenvs.create false
 RUN poetry install
