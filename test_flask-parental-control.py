@@ -182,7 +182,7 @@ def test_get_scheduler():
 
     for epoch_idx, expected_lr in zip(epoch_indices, expected_lr_values):
         calculated_lr = scheduler(epoch_idx)
-        calculated_lr = str(round(calculated_lr, 2))
+        calculated_lr = round(calculated_lr, 2)
         assert (
             calculated_lr == expected_lr
         ), f"For epoch {epoch_idx}: expected {expected_lr}, got {calculated_lr}"
