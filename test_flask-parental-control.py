@@ -10,7 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import get_file
 
-from app import get_data, on_close, on_error, on_open, video_capture
+from app import get_data, on_close, on_error, on_open
 from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
