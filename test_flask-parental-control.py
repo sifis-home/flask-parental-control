@@ -54,7 +54,9 @@ def test_get_model():
     if str(model) == str(expected_model):
         print("Test Passed: The loaded model matches the expected model.")
     else:
-        print("Test Failed: The loaded model does not match the expected model.")
+        print(
+            "Test Failed: The loaded model does not match the expected model."
+        )
         print("Expected Model Summary:")
         expected_model.summary()
         print("\nActual Loaded Model Summary:")
