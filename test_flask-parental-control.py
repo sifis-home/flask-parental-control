@@ -2,6 +2,7 @@ import platform
 from pathlib import Path
 from unittest.mock import patch
 
+import dlib
 from omegaconf import OmegaConf
 from tensorflow.keras import applications
 from tensorflow.keras.layers import Dense
@@ -9,7 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import get_file
 
-from app import get_data, on_close, on_error, on_open
+from app import get_data, loaded_model, on_close, on_error, on_open
 from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
@@ -63,6 +64,42 @@ def test_get_model():
         model.summary()
 
 
+def test_loaded_model():
+    weight_file = get_file(
+        "EfficientNetB3_224_weights.11-3.44.hdf5",
+        pretrained_model,
+        cache_subdir="pretrained_models",
+        file_hash=modhash,
+        cache_dir=str(Path(__file__).resolve().parent),
+    )
+
+    # for face detection
+    detector = dlib.get_frontal_face_detector()
+
+    # load model and weights
+    model_name, img_size = Path(weight_file).stem.split("_")[:2]
+
+    img_size = int(img_size)
+    cfg = OmegaConf.from_dotlist(
+        [f"model.model_name={model_name}", f"model.img_size={img_size}"]
+    )
+
+    expected_model = get_model(cfg)
+    model = loaded_model()
+
+    # Compare the models using their string representations
+    if str(model) == str(expected_model):
+        print("Test Passed: The loaded model matches the expected model.")
+    else:
+        print(
+            "Test Failed: The loaded model does not match the expected model."
+        )
+        print("Expected Model Summary:")
+        expected_model.summary()
+        print("\nActual Loaded Model Summary:")
+        model.summary()
+
+
 def test_get_optimizer():
     weight_file = get_file(
         "EfficientNetB3_224_weights.11-3.44.hdf5",
@@ -95,7 +132,7 @@ def test_get_optimizer():
     if cfg.train.optimizer_name == "adam":
         expected_optimizer = Adam(lr=cfg.train.lr)
     else:
-        raise ValueError("optimizer name should be 'sgd' or 'adam'")
+        raise ValueError("optimizer name should be 'adam'")
 
     # Compare the optimizers using their string representations
     if str(optimizer) == str(expected_optimizer):
