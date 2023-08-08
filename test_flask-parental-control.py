@@ -10,7 +10,14 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import get_file
 
-from app import get_data, loaded_model, on_close, on_error, on_open
+from app import (
+    get_data,
+    load_optimizer,
+    loaded_model,
+    on_close,
+    on_error,
+    on_open,
+)
 from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
@@ -128,6 +135,55 @@ def test_get_optimizer():
     )
 
     optimizer = get_optimizer(cfg)
+
+    if cfg.train.optimizer_name == "adam":
+        expected_optimizer = Adam(lr=cfg.train.lr)
+    else:
+        raise ValueError("optimizer name should be 'adam'")
+
+    # Compare the optimizers using their string representations
+    if str(optimizer) == str(expected_optimizer):
+        print(
+            "Test Passed: The loaded optimizer matches the expected optimizer."
+        )
+    else:
+        print(
+            "Test Failed: The loaded optimizer does not match the expected optimizer."
+        )
+        print("Expected Optimizer Summary:")
+        expected_optimizer.get_config()  # Display optimizer configuration
+        print("\nActual Loaded Optimizer Summary:")
+        optimizer.get_config()  # Display optimizer configuration
+
+
+def test_load_optimizer():
+    weight_file = get_file(
+        "EfficientNetB3_224_weights.11-3.44.hdf5",
+        pretrained_model,
+        cache_subdir="pretrained_models",
+        file_hash=modhash,
+        cache_dir=str(Path(__file__).resolve().parent),
+    )
+
+    # load model and weights
+    model_name, img_size = Path(weight_file).stem.split("_")[:2]
+    img_size = int(img_size)
+    optimizer_name = "adam"
+    lr = 0.001
+    epochs = 30
+    batch_size = 32
+    cfg = OmegaConf.from_dotlist(
+        [
+            f"model.model_name={model_name}",
+            f"model.img_size={img_size}",
+            f"train.optimizer_name={optimizer_name}",
+            f"train.lr={lr}",
+            f"train.epochs={epochs}",
+            f"train.batch_size={batch_size}",
+        ]
+    )
+
+    optimizer = load_optimizer(cfg)
 
     if cfg.train.optimizer_name == "adam":
         expected_optimizer = Adam(lr=cfg.train.lr)

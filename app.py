@@ -43,6 +43,15 @@ def get_data():
     return analyzer_id
 
 
+def load_optimizer(cfg):
+    if cfg.train.optimizer_name == "sgd":
+        return SGD(lr=cfg.train.lr, momentum=0.9, nesterov=True)
+    elif cfg.train.optimizer_name == "adam":
+        return Adam(lr=cfg.train.lr)
+    else:
+        raise ValueError("optimizer name should be 'sgd' or 'adam'")
+
+
 # @contextmanager
 # def video_capture(*args, **kwargs):
 #     cap = cv2.VideoCapture(*args, **kwargs)
@@ -171,7 +180,7 @@ def cam_object_recognition(
         img = np.asarray(img)
 
         frame_id += 1
-        print("frame_id: ", frame_id)
+        # print("frame_id: ", frame_id)
 
         input_img = cv2.cvtColor(
             cv2.GaussianBlur(img, (Privacy_Parameter, Privacy_Parameter), 0),
@@ -229,9 +238,9 @@ def cam_object_recognition(
                     age_text = "Senior"
                 predicted_ages2.append(age_text)
 
-            print(predicted_ages2)
+            # print(predicted_ages2)
         predicted_ages3.append(predicted_ages2)
-        print(len(predicted_ages3))
+        # print(len(predicted_ages3))
 
         ws_req = {
             "RequestPostTopicUUID": {
@@ -353,7 +362,7 @@ def handler(
             img = np.asarray(img)
 
             frame_id += 1
-            print("frame_id: ", frame_id)
+            # print("frame_id: ", frame_id)
 
             input_img = cv2.cvtColor(
                 cv2.GaussianBlur(
@@ -417,9 +426,9 @@ def handler(
                         age_text = "Senior"
                     predicted_ages2.append(age_text)
 
-                print(predicted_ages2)
+                # print(predicted_ages2)
             predicted_ages3.append(predicted_ages2)
-            print(len(predicted_ages3))
+            # print(len(predicted_ages3))
 
             ws_req = {
                 "RequestPostTopicUUID": {
