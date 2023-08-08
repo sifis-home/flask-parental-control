@@ -1,4 +1,19 @@
 # WP4 Analytic: Privacy-Aware Parental Control
+
+[![Actions Status][actions badge]][actions]
+[![CodeCov][codecov badge]][codecov]
+[![LICENSE][license badge]][license]
+
+<!-- Links -->
+[actions]: https://github.com/sifis-home/flask-parental-control/actions
+[codecov]: https://codecov.io/gh/sifis-home/flask-parental-control
+[license]: LICENSES/MIT.txt
+
+<!-- Badges -->
+[actions badge]: https://github.com/sifis-home/flask-parental-control/workflows/flask-device-anomaly-detection/badge.svg
+[codecov badge]: https://codecov.io/gh/sifis-home/flask-parental-control/branch/master/graph/badge.svg
+[license badge]: https://img.shields.io/badge/license-MIT-blue.svg
+
 The parental control analytic takes as input data the video frames produced by the surveillance cameras distributed into the controlled environment, such as the camera of the controlled device or the surveillance cameras deployed in the environment, and the metadata provided by the controlled devices. The combination of multiple cameras allows to create a global view of the monitored environment, thus improving detection accuracy. The metadata about devices allows to understand the policy associated to such devices, which could express conditions to be met in order to be allowed to use the device, e.g., the function f of the device can be performed only by an adult user. 
 
 The SIFIS-Home parental control analytic is composed by a pipeline of two components: 
