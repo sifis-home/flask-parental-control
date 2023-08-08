@@ -53,53 +53,6 @@ def load_optimizer(cfg):
         raise ValueError("optimizer name should be 'sgd' or 'adam'")
 
 
-# @contextmanager
-# def video_capture(*args, **kwargs):
-#     cap = cv2.VideoCapture(*args, **kwargs)
-#     try:
-#         yield cap
-#     finally:
-#         cap.release()
-
-
-# def yield_images(video_link):
-#     # capture video
-#     with video_capture(video_link) as cap:
-#         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-#         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-
-#         while True:
-#             # get video frame
-#             ret, img = cap.read()
-
-#             if not ret:
-#                 raise RuntimeError("Failed to capture image")
-
-#             yield img
-
-
-# def yield_images_from_dir(image_dir):
-#     image_dir = Path(image_dir)
-
-#     for image_path in image_dir.glob("*.*"):
-#         img = cv2.imread(str(image_path), 1)
-
-#         if img is not None:
-#             h, w, _ = img.shape
-#             r = 640 / max(w, h)
-#             yield cv2.resize(img, (int(w * r), int(h * r)))
-
-
-# def yield_images_from_path(image_path):
-#     # print(image_path)
-#     img = cv2.imread(str(image_path), 1)
-
-#     if img is not None:
-#         h, w, _ = img.shape
-#         r = 640 / max(w, h)
-#         yield cv2.resize(img, (int(w * r), int(h * r)))
-
-
 def loaded_model():
     weight_file = get_file(
         "EfficientNetB3_224_weights.11-3.44.hdf5",
@@ -148,26 +101,6 @@ def cam_object_recognition(
 
     frame_id = 0
 
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
-    # # for face detection
-    # detector = dlib.get_frontal_face_detector()
-
-    # # load model and weights
-    # model_name, img_size = Path(weight_file).stem.split("_")[:2]
-
-    # img_size = int(img_size)
-    # cfg = OmegaConf.from_dotlist(
-    #     [f"model.model_name={model_name}", f"model.img_size={img_size}"]
-    # )
-
-    # model = get_model(cfg)
     model = loaded_model()
     model.load_weights(weight_file)
     predicted_ages3 = []
@@ -328,27 +261,6 @@ def handler(
 
         cap = cv2.VideoCapture(video_link)
         frame_id = 0
-
-        # weight_file = get_file(
-        #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-        #     pretrained_model,
-        #     cache_subdir="pretrained_models",
-        #     file_hash=modhash,
-        #     cache_dir=str(Path(__file__).resolve().parent),
-        # )
-
-        # # for face detection
-        # detector = dlib.get_frontal_face_detector()
-
-        # # load model and weights
-        # model_name, img_size = Path(weight_file).stem.split("_")[:2]
-
-        # img_size = int(img_size)
-        # cfg = OmegaConf.from_dotlist(
-        #     [f"model.model_name={model_name}", f"model.img_size={img_size}"]
-        # )
-
-        # model = get_model(cfg)
 
         model = loaded_model()
         model.load_weights(weight_file)
