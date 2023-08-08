@@ -12,6 +12,7 @@ import rel
 import websocket
 from flask import Flask, abort, json, request
 from omegaconf import OmegaConf
+from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.utils import get_file
 
 from factory import get_model
