@@ -10,7 +10,7 @@
 [license]: LICENSES/MIT.txt
 
 <!-- Badges -->
-[actions badge]: https://github.com/sifis-home/flask-parental-control/workflows/flask-device-anomaly-detection/badge.svg
+[actions badge]: https://github.com/sifis-home/flask-parental-control/workflows/flask-parental-control/badge.svg
 [codecov badge]: https://codecov.io/gh/sifis-home/flask-parental-control/branch/master/graph/badge.svg
 [license badge]: https://img.shields.io/badge/license-MIT-blue.svg
 
