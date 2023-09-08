@@ -27,6 +27,7 @@ In order to preserve the privacy of data, Gaussian blurring is used for image/fr
 ## Deploying
 
 ### Privacy-Aware Parental Control in a container
+The DHT and the Analytics-API containers should be running before starting to build and run the image and container of the Privacy-Aware Parental Control.
 
 Privacy-Aware Parental Control is intended to run in a docker container on port 6060. The Dockerfile at the root of this repo describes the container. To build and run it execute the following commands:
 
