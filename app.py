@@ -74,7 +74,7 @@ def loaded_model():
     )
 
     model = get_model(cfg)
-    return model
+    return model, detector, img_size, weight_file
 
 
 @app.route(
@@ -101,7 +101,7 @@ def cam_object_recognition(
 
     frame_id = 0
 
-    model = loaded_model()
+    model, detector, img_size, weight_file = loaded_model()
     model.load_weights(weight_file)
     predicted_ages3 = []
 
@@ -262,7 +262,7 @@ def handler(
         cap = cv2.VideoCapture(video_link)
         frame_id = 0
 
-        model = loaded_model()
+        model, detector, img_size, weight_file = loaded_model()
         model.load_weights(weight_file)
         predicted_ages3 = []
 
@@ -295,6 +295,8 @@ def handler(
             # detect faces using dlib detector
             detected = detector(input_img, 1)
             faces = np.empty((len(detected), img_size, img_size, 3))
+
+            predicted_ages2 = []
 
             if len(detected) > 0:
                 for i, d in enumerate(detected):
