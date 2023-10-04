@@ -156,7 +156,7 @@ def test_get_optimizer():
         optimizer.get_config()  # Display optimizer configuration
 
 
-def test_load_optimizer_sgd():
+def test_load_optimizer_sgd_none():
     weight_file = get_file(
         "EfficientNetB3_224_weights.11-3.44.hdf5",
         pretrained_model,
@@ -184,6 +184,18 @@ def test_load_optimizer_sgd():
     )
 
     optimizer = load_optimizer(cfg)
+
+    optimizer_name = "Other"
+    cfg = OmegaConf.from_dotlist(
+        [
+            f"model.model_name={model_name}",
+            f"model.img_size={img_size}",
+            f"train.optimizer_name={optimizer_name}",
+            f"train.lr={lr}",
+            f"train.epochs={epochs}",
+            f"train.batch_size={batch_size}",
+        ]
+    )
 
 
 def test_get_optimizer():
