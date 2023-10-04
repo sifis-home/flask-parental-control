@@ -101,10 +101,10 @@ def test_loaded_model():
         print(
             "Test Failed: The loaded model does not match the expected model."
         )
-        print("Expected Model Summary:")
-        expected_model.summary()
-        print("\nActual Loaded Model Summary:")
-        model.summary()
+        # print("Expected Model Summary:")
+        # expected_model.summary()
+        # print("\nActual Loaded Model Summary:")
+        # model.summary()
 
 
 def test_get_optimizer():
