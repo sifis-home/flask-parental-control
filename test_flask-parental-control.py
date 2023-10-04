@@ -138,6 +138,7 @@ def test_get_optimizer():
 
     if cfg.train.optimizer_name == "adam":
         expected_optimizer = Adam(lr=cfg.train.lr)
+        expected_optimizer2 = load_optimizer(cfg)
     else:
         raise ValueError("optimizer name should be 'adam'")
 
@@ -183,7 +184,7 @@ def test_load_optimizer_sgd_none():
         ]
     )
 
-    optimizer = load_optimizer(cfg)
+    expected_optimizer = load_optimizer(cfg)
 
     optimizer_name = "Other"
     cfg = OmegaConf.from_dotlist(
@@ -196,6 +197,7 @@ def test_load_optimizer_sgd_none():
             f"train.batch_size={batch_size}",
         ]
     )
+    expected_optimizer = load_optimizer(cfg)
 
 
 def test_get_optimizer():
