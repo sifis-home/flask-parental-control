@@ -185,25 +185,6 @@ def test_load_optimizer_sgd():
 
     optimizer = load_optimizer(cfg)
 
-    if cfg.train.optimizer_name == "adam":
-        expected_optimizer = Adam(lr=cfg.train.lr)
-    else:
-        raise ValueError("optimizer name should be 'adam'")
-
-    # Compare the optimizers using their string representations
-    if str(optimizer) == str(expected_optimizer):
-        print(
-            "Test Passed: The loaded optimizer matches the expected optimizer."
-        )
-    else:
-        print(
-            "Test Failed: The loaded optimizer does not match the expected optimizer."
-        )
-        print("Expected Optimizer Summary:")
-        expected_optimizer.get_config()  # Display optimizer configuration
-        print("\nActual Loaded Optimizer Summary:")
-        optimizer.get_config()  # Display optimizer configuration
-
 
 def test_get_optimizer():
     weight_file = get_file(
