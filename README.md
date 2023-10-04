@@ -22,7 +22,7 @@ The SIFIS-Home parental control analytic is composed by a pipeline of two compon
 
 The age estimation model uses a [Keras implementation](https://github.com/yu4u/age-gender-estimation) that has been trained on the [IMDP-WIKI dataset](https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/), but to increase the accuracy of the model,we have classified age ranges into categories of "Toddler" for age value less than 13 years, "Child" for age value between 13 and 19, "Teen" for age value between 20 and 60, "Adult", and "Senior" for age value more than 60.
 
-In order to preserve the privacy of data, Gaussian blurring is used for image/frame anonymization. Gaussian blurring convolves an image with a Gaussian filter of different sizes for anonymization. The privacy degree is controlled using the radius of blur metric. Gaussian blurring uses a low-pass filter which performs the smoothing function of an image. 
+To preserve the privacy of data, Gaussian blurring is used for image/frame anonymization. Gaussian blurring convolves an image with a Gaussian filter of different sizes for anonymization. The privacy degree is controlled using the radius of blur metric. Gaussian blurring uses a low-pass filter which performs the smoothing function of an image. 
 
 ## Deploying
 
