@@ -22,16 +22,23 @@ from factory import get_model, get_optimizer, get_scheduler
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
 modhash = "6d7f7b7ced093a8b3ef6399163da6ece"
+weight_file = get_file(
+    "EfficientNetB3_224_weights.11-3.44.hdf5",
+    pretrained_model,
+    cache_subdir="pretrained_models",
+    file_hash=modhash,
+    cache_dir=str(Path(__file__).resolve().parent),
+)
 
 
 def test_get_model():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
@@ -72,13 +79,13 @@ def test_get_model():
 
 
 def test_loaded_model():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # for face detection
     detector = dlib.get_frontal_face_detector()
@@ -108,13 +115,13 @@ def test_loaded_model():
 
 
 def test_get_optimizer():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
@@ -151,20 +158,20 @@ def test_get_optimizer():
         print(
             "Test Failed: The loaded optimizer does not match the expected optimizer."
         )
-        print("Expected Optimizer Summary:")
-        expected_optimizer.get_config()  # Display optimizer configuration
-        print("\nActual Loaded Optimizer Summary:")
-        optimizer.get_config()  # Display optimizer configuration
+        # print("Expected Optimizer Summary:")
+        # expected_optimizer.get_config()  # Display optimizer configuration
+        # print("\nActual Loaded Optimizer Summary:")
+        # optimizer.get_config()  # Display optimizer configuration
 
 
 def test_load_optimizer_sgd_none():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
@@ -188,13 +195,13 @@ def test_load_optimizer_sgd_none():
 
 
 def test_get_optimizer():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
@@ -237,13 +244,13 @@ def test_get_optimizer():
 
 
 def test_load_optimizer():
-    weight_file = get_file(
-        "EfficientNetB3_224_weights.11-3.44.hdf5",
-        pretrained_model,
-        cache_subdir="pretrained_models",
-        file_hash=modhash,
-        cache_dir=str(Path(__file__).resolve().parent),
-    )
+    # weight_file = get_file(
+    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
+    #     pretrained_model,
+    #     cache_subdir="pretrained_models",
+    #     file_hash=modhash,
+    #     cache_dir=str(Path(__file__).resolve().parent),
+    # )
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
