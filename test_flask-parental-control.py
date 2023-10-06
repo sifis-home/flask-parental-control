@@ -208,6 +208,25 @@ def test_on_error():
     mock_print.assert_called_once_with(error)
 
 
+def test_iterate():
+    items_list = [5, 3.2]
+    types = iterate(items_list)
+
+    expected_types = []
+    for item in items_list:
+        if type(item) is int:
+            item_type = "Integer"
+        elif type(item) is float:
+            item_type = "Float"
+        elif type(item) is str:
+            item_type = "String"
+        else:
+            item_type = "Other"
+        expected_types.append(item_type)
+
+    assert types == expected_types
+
+
 def test_on_close():
     close_status_code = 1000
     close_msg = "Connection closed"

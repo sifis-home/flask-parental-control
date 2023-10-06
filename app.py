@@ -77,6 +77,21 @@ def loaded_model():
     return model, detector, img_size, weight_file
 
 
+def iterate(items_list):
+    types = []
+    for item in items_list:
+        if type(item) is int:
+            item_type = "Integer"
+        elif type(item) is float:
+            item_type = "Float"
+        elif type(item) is str:
+            item_type = "String"
+        else:
+            item_type = "Other"
+        types.append(item_type)
+    return types
+
+
 @app.route(
     "/cam_object/<cam_link>/<Privacy_Parameter>/<requestor_id>/<requestor_type>/<request_id>"
 )
