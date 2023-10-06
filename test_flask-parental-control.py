@@ -30,6 +30,13 @@ weight_file = get_file(
     cache_dir=str(Path(__file__).resolve().parent),
 )
 
+# load model and weights
+model_name, img_size = Path(weight_file).stem.split("_")[:2]
+img_size = int(img_size)
+lr = 0.001
+epochs = 30
+batch_size = 32
+
 
 def test_get_model():
     # load model and weights
@@ -99,13 +106,7 @@ def test_loaded_model():
 
 
 def test_get_optimizer():
-    # load model and weights
-    model_name, img_size = Path(weight_file).stem.split("_")[:2]
-    img_size = int(img_size)
     optimizer_name = "adam"
-    lr = 0.001
-    epochs = 30
-    batch_size = 32
     cfg = OmegaConf.from_dotlist(
         [
             f"model.model_name={model_name}",
@@ -140,14 +141,8 @@ def test_get_optimizer():
     # optimizer.get_config()  # Display optimizer configuration
 
 
-def test_load_optimizer_sgd_none():
-    # load model and weights
-    model_name, img_size = Path(weight_file).stem.split("_")[:2]
-    img_size = int(img_size)
+def test_load_optimizer_sgd():
     optimizer_name = "sgd"
-    lr = 0.001
-    epochs = 30
-    batch_size = 32
     cfg = OmegaConf.from_dotlist(
         [
             f"model.model_name={model_name}",
@@ -163,13 +158,7 @@ def test_load_optimizer_sgd_none():
 
 
 def test_get_optimizer():
-    # load model and weights
-    model_name, img_size = Path(weight_file).stem.split("_")[:2]
-    img_size = int(img_size)
     optimizer_name = "adam"
-    lr = 0.001
-    epochs = 30
-    batch_size = 32
     cfg = OmegaConf.from_dotlist(
         [
             f"model.model_name={model_name}",
@@ -204,13 +193,7 @@ def test_get_optimizer():
 
 
 def test_load_optimizer():
-    # load model and weights
-    model_name, img_size = Path(weight_file).stem.split("_")[:2]
-    img_size = int(img_size)
     optimizer_name = "adam"
-    lr = 0.001
-    epochs = 30
-    batch_size = 32
     cfg = OmegaConf.from_dotlist(
         [
             f"model.model_name={model_name}",
