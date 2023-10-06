@@ -12,6 +12,7 @@ from tensorflow.keras.utils import get_file
 
 from app import (
     get_data,
+    iterate,
     load_optimizer,
     loaded_model,
     on_close,
