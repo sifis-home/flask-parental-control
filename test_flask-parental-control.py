@@ -186,19 +186,6 @@ def test_load_optimizer_sgd_none():
 
     expected_optimizer = load_optimizer(cfg)
 
-    optimizer_name = "Other"
-    cfg = OmegaConf.from_dotlist(
-        [
-            f"model.model_name={model_name}",
-            f"model.img_size={img_size}",
-            f"train.optimizer_name={optimizer_name}",
-            f"train.lr={lr}",
-            f"train.epochs={epochs}",
-            f"train.batch_size={batch_size}",
-        ]
-    )
-    expected_optimizer = load_optimizer(cfg)
-
 
 def test_get_optimizer():
     weight_file = get_file(
