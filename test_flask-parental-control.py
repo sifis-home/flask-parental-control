@@ -32,14 +32,6 @@ weight_file = get_file(
 
 
 def test_get_model():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
@@ -79,14 +71,6 @@ def test_get_model():
 
 
 def test_loaded_model():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # for face detection
     detector = dlib.get_frontal_face_detector()
 
@@ -115,14 +99,6 @@ def test_loaded_model():
 
 
 def test_get_optimizer():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
@@ -144,35 +120,27 @@ def test_get_optimizer():
     optimizer = get_optimizer(cfg)
 
     if cfg.train.optimizer_name == "adam":
-        expected_optimizer = Adam(lr=cfg.train.lr)
+        # expected_optimizer = Adam(lr=cfg.train.lr)
         expected_optimizer2 = load_optimizer(cfg)
     else:
         raise ValueError("optimizer name should be 'adam'")
 
-    # Compare the optimizers using their string representations
-    if str(optimizer) == str(expected_optimizer):
-        print(
-            "Test Passed: The loaded optimizer matches the expected optimizer."
-        )
-    else:
-        print(
-            "Test Failed: The loaded optimizer does not match the expected optimizer."
-        )
-        # print("Expected Optimizer Summary:")
-        # expected_optimizer.get_config()  # Display optimizer configuration
-        # print("\nActual Loaded Optimizer Summary:")
-        # optimizer.get_config()  # Display optimizer configuration
+    # # Compare the optimizers using their string representations
+    # if str(optimizer) == str(expected_optimizer):
+    #     print(
+    #         "Test Passed: The loaded optimizer matches the expected optimizer."
+    #     )
+    # else:
+    #     print(
+    #         "Test Failed: The loaded optimizer does not match the expected optimizer."
+    #     )
+    # print("Expected Optimizer Summary:")
+    # expected_optimizer.get_config()  # Display optimizer configuration
+    # print("\nActual Loaded Optimizer Summary:")
+    # optimizer.get_config()  # Display optimizer configuration
 
 
 def test_load_optimizer_sgd_none():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
@@ -195,14 +163,6 @@ def test_load_optimizer_sgd_none():
 
 
 def test_get_optimizer():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
@@ -244,14 +204,6 @@ def test_get_optimizer():
 
 
 def test_load_optimizer():
-    # weight_file = get_file(
-    #     "EfficientNetB3_224_weights.11-3.44.hdf5",
-    #     pretrained_model,
-    #     cache_subdir="pretrained_models",
-    #     file_hash=modhash,
-    #     cache_dir=str(Path(__file__).resolve().parent),
-    # )
-
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
     img_size = int(img_size)
